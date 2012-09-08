@@ -1,6 +1,6 @@
 from __future__ import print_function
 import numpy as np
-
+import operator as op
 
 def find_index(c, seq):
     """
@@ -137,4 +137,6 @@ def test():
     ))
 
 test()
+
+
 
