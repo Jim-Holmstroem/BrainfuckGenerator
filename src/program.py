@@ -1,18 +1,32 @@
 import __future__ import print_function
 import operator as op
+import numpy as np
 
 class program(object):
+    mutation_rate = 1./10000. #TODO tune this
+    number_of_crossovers = 3
     def __init__(self, prgm):
         #prgm - each element is either a programchar (not '[' or ']') or a `program_loop`
-        self.prgm = prgm 
+        self.prgm = prgm  
 
     def __str__(self):
         return reduce(op.add, map(str, self.prgm))
 
     def __len__(self):
         return reduce(op.add, map(len, self.prgm))
+   
+    def mutation(self):
+        pass
+
+    def crossover(self, other):
+        """
+        
+        return the crossovered and the complement 
+        """
+        pass
 
 class program_loop(program):
+    #makes it possible to cross over operation loops and still have a valid program.
     def __init__(self, prgm):
         self.prgm = prgm #The same way as in `program`
 
@@ -21,5 +35,4 @@ class program_loop(program):
 
     def __len__(self):
         return 2+reduce(op.add, map(len, self.prgm))
-
 
