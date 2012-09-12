@@ -98,11 +98,11 @@ def run(program, input_data = None, N = 256, M = 256, print_globals = False , pr
         else:
             raise Exception("Unrecognized command '{command}'".format(command=command))
 
-
+#TODO move this to the /bench
 def benchmark():
     #a list of simple programs to benchmark the performance.
     pass
-
+#TODO move this to the /test
 def test():
     #a list of simple programs to test different features. #NOTE is it possible to make a testset which can guarantee that the interpreter does it right all the time?
     prgm_ans = [
@@ -135,8 +135,5 @@ def test():
             prgm_ans
         )
     ))
-
-test()
-
-
+#test()
 
