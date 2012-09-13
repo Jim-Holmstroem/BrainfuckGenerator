@@ -1,6 +1,7 @@
 import __future__ import print_function
 import operator as op
 import numpy as np
+import genetic_programming as gp
 
 class program(object):
     mutation_rate = 1./10000. #TODO tune this
@@ -14,18 +15,8 @@ class program(object):
 
     def __len__(self):
         return reduce(op.add, map(len, self.prgm))
-   
-    def mutation(self):
-        pass
 
-    def crossover(self, other):
-        """
-        
-        return the crossovered and the complement 
-        """
-        pass
-
-class program_loop(program):
+class loop(program):
     #makes it possible to cross over operation loops and still have a valid program.
     def __init__(self, prgm):
         self.prgm = prgm #The same way as in `program`
