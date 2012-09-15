@@ -6,7 +6,7 @@ def find_index(c, seq):
     """
     Return first item in sequence where f(item) == True.
     """
-    for idx,item in enumerate(seq):
+    for idx, item in enumerate(seq):
         if c(item): 
             return idx
 

@@ -12,23 +12,7 @@ def compile(program):
 
     returns compiled program.program
     """
-    
-    def get_code(program):
-        pass
-    def is_code(program):
-        pass
-    def get_loop(program):
-        pass
-    def is_loop(program):
-        pass
-    def is_loop_end(program):
-        pass
-    def get_program(program):
-        pass
-    def is_program(program):
-        pass
+    pos = 0    
 
-     
-    
 
     return prgm.program(data)
