@@ -1,14 +1,7 @@
 from __future__ import print_function
 import numpy as np
 import operator as op
-
-def find_index(c, seq):
-    """
-    Return first item in sequence where f(item) == True.
-    """
-    for idx, item in enumerate(seq):
-        if c(item): 
-            return idx
+import utils as utils
 
 def run(program, input_data = None, N = 256, M = 256, print_globals = False , print_heap = False):
     """
@@ -19,26 +12,7 @@ def run(program, input_data = None, N = 256, M = 256, print_globals = False , pr
     pc = 0 #program pointer
     dp = 0 #data pointer
     ip = 0 #input pointer (change input to a stream instead
-    brackets = (
-            np.array(
-                map(
-                    ord,
-                    program
-                    )
-                ) == 
-            ord('[')
-            ).astype(np.int) - (
-            np.array(
-                map(
-                    ord,
-                    program
-                    )
-                ) == 
-            ord(']')
-            ).astype(np.int)
-    level = brackets.cumsum()
-    bracketlevel = zip(brackets,level)
-
+    bracket_levels = utils.bracket_levels(program) 
     while( True ):
         if( not pc<len(program) ): #program done
             return
@@ -83,7 +57,7 @@ def run(program, input_data = None, N = 256, M = 256, print_globals = False , pr
         elif( command in ['[', ']'] ):
             if( command == '[' ):
                 if( heap[dp] == 0 ):
-                    pc += find_index(lambda x: x==(-1, level[pc]-1), bracketlevel[pc:])
+                    pc += utils.find_index(lambda x: x==(-1, bracket_levels[pc][1]-1), bracket_levels[pc:])
                     
                 else:
                     pc += 1
@@ -93,7 +67,7 @@ def run(program, input_data = None, N = 256, M = 256, print_globals = False , pr
                     pc += 1
                     
                 else:
-                    pc -= find_index(lambda x: x==(1, level[pc]+1), bracketlevel[:pc][::-1]) + 1
+                    pc -= utils.find_index(lambda x: x==(1, bracket_levels[pc][1]+1), bracket_levels[:pc][::-1]) + 1
 
         else:
             raise Exception("Unrecognized command '{command}'".format(command=command))
