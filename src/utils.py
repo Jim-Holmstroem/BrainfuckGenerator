@@ -26,4 +26,4 @@ def find_index(c, seq):
     for idx, item in enumerate(seq):
         if c(item): 
             return idx
-
+    return None  
