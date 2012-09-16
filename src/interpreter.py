@@ -57,7 +57,7 @@ def run(program, input_data = None, N = 256, M = 256, print_globals = False , pr
         elif( command in ['[', ']'] ):
             if( command == '[' ):
                 if( heap[dp] == 0 ):
-                    pc += utils.find_index(lambda x: x==(-1, bracket_levels[pc][1]-1), bracket_levels[pc:])
+                    pc += utils.find_index(lambda x: x==(-1, bracket_levels[pc][1]), bracket_levels[pc:])
                     
                 else:
                     pc += 1
@@ -67,7 +67,7 @@ def run(program, input_data = None, N = 256, M = 256, print_globals = False , pr
                     pc += 1
                     
                 else:
-                    pc -= utils.find_index(lambda x: x==(1, bracket_levels[pc][1]+1), bracket_levels[:pc][::-1]) + 1
+                    pc -= utils.find_index(lambda x: x==(1, bracket_levels[pc][1]), bracket_levels[:pc][::-1]) + 1
 
         else:
             raise Exception("Unrecognized command '{command}'".format(command=command))

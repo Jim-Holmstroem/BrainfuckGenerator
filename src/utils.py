@@ -15,7 +15,7 @@ def bracket_levels(program):
     
     brackets = locate_char(program, '[') - locate_char(program, ']') 
     
-    level = brackets.cumsum()
+    level = brackets.cumsum() + locate_char(program, ']')
     bracket_levels = zip(brackets, level)
     return bracket_levels
 
