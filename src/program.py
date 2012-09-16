@@ -1,4 +1,4 @@
-import __future__ import print_function
+from __future__ import print_function
 import operator as op
 import numpy as np
 import genetic_programming as gp
@@ -11,10 +11,10 @@ class program(object):
         self.prgm = prgm  
 
     def __str__(self):
-        return reduce(op.add, map(str, self.prgm))
+        return reduce(op.add, map(str, self.prgm),'')
 
     def __len__(self):
-        return reduce(op.add, map(len, self.prgm))
+        return reduce(op.add, map(len, self.prgm),0)
 
 class loop(program):
     #makes it possible to cross over operation loops and still have a valid program.
@@ -22,8 +22,8 @@ class loop(program):
         self.prgm = prgm #The same way as in `program`
 
     def __str__(self):
-        return "[{program}]".format(program=self.prgm)
+        return "[{program}]".format(program=str(self.prgm))
 
     def __len__(self):
-        return 2+reduce(op.add, map(len, self.prgm))
+        return 2+reduce(op.add, map(len, self.prgm),0)
 
