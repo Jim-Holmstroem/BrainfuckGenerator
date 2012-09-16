@@ -22,7 +22,7 @@ def run(program, input_data = None, N = 256, M = 256, print_globals = False , pr
             print("{command}:pc({pc}):dp({dp}):heap[dp]({heapdp})".format(command=command,pc=pc,dp=dp,heapdp=heap[dp]))
         if(print_heap):
             print(heap)
-        if( command in ['>', '<'] ):
+        if( command in '><' ):
             dp += {
                     '>':1,
                     '<':-1
@@ -30,7 +30,7 @@ def run(program, input_data = None, N = 256, M = 256, print_globals = False , pr
             pc += 1
             dp %= M
 
-        elif( command in ['+', '-'] ):
+        elif( command in '+-' ):
             heap[dp] += {
                     '+':1,
                     '-':-1
@@ -38,7 +38,7 @@ def run(program, input_data = None, N = 256, M = 256, print_globals = False , pr
             heap[dp] %= N
             pc += 1
 
-        elif( command in ['.', ','] ):
+        elif( command in '.,' ):
             if( command == '.' ):
                 pc += 1
                 yield str(unichr(
