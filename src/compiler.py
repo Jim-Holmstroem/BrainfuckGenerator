@@ -3,7 +3,7 @@ import itertools as it
 import numpy as np
 import operator as op
 
-import program as prgm 
+import program as prgm
 import utils as utils
 
 def compile(program):
@@ -29,9 +29,9 @@ def compile(program):
         return prgm.program(program)
     #print("outer_start:", outer_start)
     #print("outer_end:", outer_end)
-    marks = reduce(op.add, 
+    marks = reduce(op.add,
         zip(
-            np.hstack([[-1,], outer_end]), 
+            np.hstack([[-1,], outer_end]),
             np.hstack([outer_start, [len(program),]])
         )
     ) #logically works like ]code[loop]code[
@@ -49,10 +49,10 @@ def compile(program):
     loop_parts = map(lambda (start, end): prgm.loop(program[start:end]),loop_spans)
     #print("loop_spans:", loop_spans)
     #print("loop_parts:",map(str, loop_parts))
-    return prgm.program(reduce(op.add, it.izip_longest(code_parts, loop_parts, fillvalue=''))) 
+    return prgm.program(reduce(op.add, it.izip_longest(code_parts, loop_parts, fillvalue='')))
 
 def test():
-    testinput = [ 
+    testinput = [
         '+++--->>>.....<',
         '+++---[>.<]...<',
         '+++[-+.][>+.]>....<',
