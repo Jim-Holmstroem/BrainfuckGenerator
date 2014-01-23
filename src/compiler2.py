@@ -50,76 +50,63 @@ class SuperProgram(object):
         ...
     """
 
+def compile_with_flat(program_code):
+    assert(isinstance(program_code, Code))
+
+    flat = []  # Adds each new node, (how can I use these to crossover two trees from the flat?
+            # it's also possible to pass it only without having something global like this
 #@trampoline
-def compile(program_code, program=[]):
-    """
-    Parameters
-    ----------
-    program_code : Code
-    program : [Code | Loop]
-        Acts as a stack to add compiled code on
+    def _compile(program_code, program=Code()):
+        """
+        Parameters
+        ----------
+        program_code : Code
+        program : [Code | Loop]
+            Acts as a stack to add compiled code on
 
-    Returns
-    -------
-    program : [Code | Loop]
-    """
-    if len(program_code) == 0:
-        return program
-
-    else:
-        letter, subprogram_code = program_code[0], program_code[1:]
-
-        if letter == Code(']'):
-            return subprogram_code, program  # HACK
-
-        elif letter == Code('['):
-            subprogram_left, inner_loop_program = compile(
-                subprogram_code
-            )
-
-            loop = Loop(inner_loop_program)
-            return compile(
-                subprogram_left,
-                Code(program + [loop, ])
-            )
-
-        elif letter in map(Code, '+-.,><'):
-            return compile(
-                subprogram_code,
-                Code(program + [letter, ])
-            )
+        Returns
+        -------
+        program : [Code | Loop]
+        """
+        if len(program_code) == 0:
+            return program
 
         else:
-            raise Exception(
-                "Compilation error '{}' uknown character".format(
-                    letter
+            letter, subprogram_code = program_code[0], program_code[1:]
+
+            if letter == Code(']'):
+                return subprogram_code, program  # HACK
+
+            elif letter == Code('['):
+                subprogram_left, inner_loop_program = _compile(
+                    subprogram_code
                 )
-            )
 
-def test():
-    test_input = map(Code, [
-        '+++--->>>.....<',
-        '+++---[>.<]...<',
-        '+++[-+.][>+.]>....<',
-        '[-+.][>+.]>....<',
-        '+++[-+.][>+.]',
-        '+++[-+[++].][>+.]',
-        '[[[[[[[[++]]]]]]]]',
-        '[>[>[>[>[>[>[>[++]]]]]]]]'
-    ])
+                loop = Loop(inner_loop_program)
+                #flat += [loop, ]
 
-    results = map(compile, test_input)
-    map(print, results)
-    1/0
-    print(
-        "test: {status}".format(
-            status=("Fail", "OK")[
-                all(map(
-                    lambda code: code == str(compile(code)),
-                    test_input
-                ))
-            ]
-        )
-    )
+                return _compile(
+                    subprogram_left,
+                    program + [loop, ]
+                )
 
-test()
+            elif letter in map(Code, '+-.,><'):
+                #flat += [letter, ]
+                return _compile(
+                    subprogram_code,
+                    program + [letter, ]
+                )
+
+            else:
+                raise Exception(
+                    "Compilation error '{}' uknown character".format(
+                        letter
+                    )
+                )
+
+    return _compile(program_code), flat
+
+def compile(program_code):
+    program, flat = compile_with_flat(program_code)
+
+    return program
