@@ -12,6 +12,8 @@ class Loop(object):
     def __repr__(self):
         return self.__str__()
     def __len__(self):
+        """Acts as weight when sampling/slicing
+        """
         return 1 + len(self.program)
 
 
@@ -34,6 +36,8 @@ class Code(list):
             super(Code, self).__add__(other)
         )
     def __len__(self):
+        """Acts as weight when sampling/slicing
+        """
         return sum(map(len, iter(self)))
 
 
