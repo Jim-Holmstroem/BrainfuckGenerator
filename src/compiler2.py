@@ -1,7 +1,7 @@
 from __future__ import print_function, division
 
 
-from itertools import imap
+from itertools import imap, chain
 
 
 class Loop(object):
@@ -11,6 +11,9 @@ class Loop(object):
         return "[{}]".format(self.program)
     def __repr__(self):
         return self.__str__()
+    def __len__(self):
+        return 1 + len(self.program)
+
 
 class Code(list):
     def __str__(self):
@@ -22,23 +25,17 @@ class Code(list):
         )
     def __repr__(self):
         return self.__str__()
-    def __getitem__(self, *args, **kwargs):
-        return self.__class__(
-            super(Code, self).__getitem__(*args, **kwargs)
-        )
     def __getslice__(self, *args, **kwargs):
         return self.__class__(
             super(Code, self).__getslice__(*args, **kwargs)
-        )
-    def __iter__(self):
-        return imap(
-            self.__class__,
-            super(Code, self).__iter__()
         )
     def __add__(self, other):
         return self.__class__(
             super(Code, self).__add__(other)
         )
+    def __len__(self):
+        return sum(map(len, iter(self)))
+
 
 class SuperProgram(object):
     """Code like '+++++' could be a "superpixel" and treated as '+=5' to optimize
@@ -49,6 +46,7 @@ class SuperProgram(object):
         relative position +8 will be read with old value + 4 and then it subtracts 3
         ...
     """
+
 
 def compile_with_flat(program_code):
     assert(isinstance(program_code, Code))
@@ -74,10 +72,10 @@ def compile_with_flat(program_code):
         else:
             letter, subprogram_code = program_code[0], program_code[1:]
 
-            if letter == Code(']'):
+            if letter == ']':
                 return subprogram_code, program  # HACK
 
-            elif letter == Code('['):
+            elif letter == '[':
                 subprogram_left, inner_loop_program = _compile(
                     subprogram_code
                 )
@@ -90,7 +88,7 @@ def compile_with_flat(program_code):
                     program + [loop, ]
                 )
 
-            elif letter in map(Code, '+-.,><'):
+            elif letter in '+-.,><':
                 #flat += [letter, ]
                 return _compile(
                     subprogram_code,
@@ -105,6 +103,7 @@ def compile_with_flat(program_code):
                 )
 
     return _compile(program_code), flat
+
 
 def compile(program_code):
     program, flat = compile_with_flat(program_code)
