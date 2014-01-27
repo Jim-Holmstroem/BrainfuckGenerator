@@ -16,8 +16,9 @@ class Loop(object):
         """
         return 1 + len(self.program)
 
+immutablelist = tuple  # HACK
 
-class Code(list):
+class Code(immutablelist):
     def __str__(self):
         return ''.join(
             map(
@@ -39,7 +40,6 @@ class Code(list):
         """Acts as weight when sampling/slicing
         """
         return sum(map(len, iter(self)))
-
 
 class SuperProgram(object):
     """Code like '+++++' could be a "superpixel" and treated as '+=5' to optimize
@@ -89,14 +89,14 @@ def compile_with_flat(program_code):
 
                 return _compile(
                     subprogram_left,
-                    program + [loop, ]
+                    program + immutablelist([loop, ])
                 )
 
             elif letter in '+-.,><':
                 #flat += [letter, ]
                 return _compile(
                     subprogram_code,
-                    program + [letter, ]
+                    program + immutablelist([letter, ])
                 )
 
             else:
