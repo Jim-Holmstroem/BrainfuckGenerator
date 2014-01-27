@@ -36,10 +36,7 @@ class Prototype(object):
         self.kwargs = kwargs
 
     def __call__(self, *args, **kwargs):
-        return self.prototype_base(
-            *(self.args + args),
-            **concatenate(self.kwargs, kwargs),
-        )
+        return self.prototype_base(*(self.args + args), **concatenate(self.kwargs, kwargs))
 
 
 def is_loop_prototype(obj):
@@ -56,7 +53,7 @@ def scale_atomic_apriori(scale, atomic_apriori):
 
 
 class APriori(object):
-    __metaclass__ = ABCMeta
+    #__metaclass__ = ABCMeta  # TODO have a abstract baseclass for this one
 
     """Uniform apriori over levels.
 
@@ -66,7 +63,6 @@ class APriori(object):
     def __init__(self, atomic_apriori):
         self.atomic_apriori = atomic_apriori
 
-    @abstractmethod
     def atomic(self):
         """
         Returns
@@ -75,7 +71,6 @@ class APriori(object):
         """
         return self.atomic_apriori
 
-    @abstractmethod
     def sub(self):
         """
         Returns
@@ -87,22 +82,23 @@ class APriori(object):
             atomic_apriori=self.atomic_apriori
         )
 
-basic_apriori = AtomicAPriori(
+a = 0.15
+basic_apriori = APriori(AtomicAPriori(
     {
-        Prototype(Loop): 0.1,
-        Code('>'): 0.1,
-        Code('<'): 0.1,
-        Code('.'): 0.1,
-        Code(','): 0.0,
-        Code('['): 0.1,
-        Code(']'): 0.1,
+        Prototype(Loop): a,
+        Code('>'): a,
+        Code('<'): a,
+        Code('.'): 0,
+        Code(','): a,
+        Code('+'): a,
+        Code('-'): a,
     }
-)
+))
 
 
 def random_code(apriori):
-    atomic_sample = apiriori.atomic.sample()
+    atomic_sample = apriori.atomic().sample()
 
     atomic_code = atomic_sample(apriori.sub()) if is_loop_prototype(atomic_sample) else atomic_sample
 
-    return atomic_code + random_code if atomic_code is not None else Code()
+    return atomic_code + random_code(apriori) if atomic_code is not None else Code()
