@@ -1,6 +1,7 @@
 from __future__ import print_function, division
 
 from operator import methodcaller, mul
+from itertools import takewhile, imap, repeat, starmap
 from functools import partial, wraps
 from collections import namedtuple
 from abc import abstractmethod, ABCMeta
@@ -10,18 +11,7 @@ from numpy.random import choice
 from compiler2 import Loop, Code
 
 import sys
-sys.setrecursionlimit(1024*16)
-
-class AtomicAPriori(dict):  # TODO immutable
-    def __init__(self, *args, **kwargs):
-        super(AtomicAPriori, self).__init__(*args, **kwargs)
-        self[Code()] = 1 - sum(self.values())
-
-    def sample(self):
-        return choice(
-            a=self.keys(),
-            p=self.values(),
-        )
+sys.setrecursionlimit(1024 * 128)
 
 
 def concatenate(*dicts):
@@ -52,6 +42,7 @@ class Prototype(object):
     def __str__(self):
         return self.__repr__()
 
+
 def is_loop_prototype(obj):
     return isinstance(obj, Prototype) and isinstance(obj.prototype_base(), Loop)
 
@@ -61,8 +52,36 @@ def scale_atomic_apriori(scale, atomic_apriori):
         return key, scale * value
 
     return atomic_apriori.__class__(
-        map(scale_item, atomic_apriori.viewitems())
+        starmap(scale_item, atomic_apriori.viewitems())
     )
+
+
+class AtomicAPriori(dict):  # TODO immutable
+    def __init__(self, *args, **kwargs):
+        super(AtomicAPriori, self).__init__(*args, **kwargs)
+        if Code() in self.keys():
+            del self[Code()]
+        self[Code()] = 1 - sum(self.values())
+
+    def sample(self):
+        return choice(
+            a=self.keys(),
+            p=self.values(),
+        )
+
+
+a = (1 - 0.01) / 6
+basic_atomic_apriori = AtomicAPriori(
+    {
+        Prototype(Loop): a,
+        Code('>'): a,
+        Code('<'): a,
+        Code('.'): a,
+        Code(','): 0,
+        Code('+'): a,
+        Code('-'): a,
+    }
+)
 
 
 class APriori(object):
@@ -73,8 +92,9 @@ class APriori(object):
     Inherit from this class if you want to have another apriori at each loop-level.
     """
 
-    def __init__(self, atomic_apriori):
+    def __init__(self, atomic_apriori, scale=0.95):
         self.atomic_apriori = atomic_apriori
+        self.scale = scale
 
     def atomic(self):
         """
@@ -92,21 +112,12 @@ class APriori(object):
             The apriori for the next level
         """
         return self.__class__(
-            atomic_apriori=self.atomic_apriori
+            atomic_apriori=scale_atomic_apriori(self.scale, self.atomic_apriori),
+            scale=self.scale
         )
 
-a = 0.15
-basic_apriori = APriori(AtomicAPriori(
-    {
-        Prototype(Loop): a/2,
-        Code('>'): a,
-        Code('<'): a,
-        Code('.'): a,
-        Code(','): 0,
-        Code('+'): a,
-        Code('-'): a,
-    }
-))
+
+basic_apriori = APriori(basic_atomic_apriori)
 print('p_stop={}'.format(basic_apriori.atomic()[Code()]))
 
 
@@ -118,9 +129,11 @@ def random_code(apriori=basic_apriori):
 
     else:
         if is_loop_prototype(atomic_sample):
-            code = Code([atomic_sample(
-                random_code(apriori.sub()),
-            ), ])
+            code = Code([
+                atomic_sample(
+                    random_code(apriori.sub()),
+                ),
+            ])
 
         else:
             code = atomic_sample
@@ -128,7 +141,7 @@ def random_code(apriori=basic_apriori):
         return code + random_code(apriori)
 
 
-def random_code_flat(apriori):
+def random_code_flat(apriori=basic_apriori):
     level0_code = takewhile(
         bool,
         imap(
@@ -137,4 +150,21 @@ def random_code_flat(apriori):
         )
     )
 
+    def unfold(code):
+        if is_loop_prototype(code):
+            return Code([
+                code(
+                    random_code_flat(apriori.sub())
+                ),
+            ])
+        else:
+            return code
 
+    code = Code(map(
+        unfold,
+        level0_code
+    ))
+
+    return code
+
+print(random_code_flat())
