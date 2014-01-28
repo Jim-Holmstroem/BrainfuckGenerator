@@ -4,19 +4,8 @@ from __future__ import print_function, division
 from itertools import imap, chain
 
 
-class Loop(object):
-    def __init__(self, program):
-        self.program = program
-    def __str__(self):
-        return "[{}]".format(self.program)
-    def __repr__(self):
-        return self.__str__()
-    def __len__(self):
-        """Acts as weight when sampling/slicing
-        """
-        return 1 + len(self.program)
-
 immutablelist = tuple  # HACK
+
 
 class Code(immutablelist):
     def __str__(self):
@@ -26,20 +15,35 @@ class Code(immutablelist):
                 super(Code, self).__iter__()
             )
         )
+
     def __repr__(self):
         return self.__str__()
+
     def __getslice__(self, *args, **kwargs):
         return self.__class__(
             super(Code, self).__getslice__(*args, **kwargs)
         )
+
     def __add__(self, other):
         return self.__class__(
             super(Code, self).__add__(other)
         )
+
     def __len__(self):
         """Acts as weight when sampling/slicing
         """
         return sum(map(len, iter(self)))
+
+
+class Loop(Code):
+    def __str__(self):
+        return "[{}]".format(super(Loop, self).__str__())
+
+    def __len__(self):
+        """Acts as weight when sampling/slicing
+        """
+        return 1 + super(Loop, self).__len__()
+
 
 class SuperProgram(object):
     """Code like '+++++' could be a "superpixel" and treated as '+=5' to optimize
