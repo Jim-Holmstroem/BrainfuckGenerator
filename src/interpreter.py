@@ -28,7 +28,12 @@ def run(
 
         command = program[pc]
         if print_globals:
-            print("{command}:pc({pc}):dp({dp}):heap[dp]({heapdp})".format(command=command,pc=pc,dp=dp,heapdp=heap[dp]))
+            print("{command}:pc({pc}):dp({dp}):heap[dp]({heapdp})".format(
+                command=command,
+                pc=pc,
+                dp=dp,
+                heapdp=heap[dp]
+            ))
         if print_heap:
             print(heap)
         if command in '><':
@@ -41,9 +46,9 @@ def run(
 
         elif command in '+-':
             heap[dp] += {
-                    '+':1,
-                    '-':-1
-                    }[command] #NOTE be carefull doing mod on negative numbers.
+                '+': 1,
+                '-': -1,
+            }[command] #NOTE be carefull doing mod on negative numbers.
             heap[dp] %= N
             pc += 1
 
@@ -93,27 +98,21 @@ def test():
     #a list of simple programs to test different features. #NOTE is it possible to make a testset which can guarantee that the interpreter does it right all the time?
     prgm_ans = [
             (
-                "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>."
-            ,
-                None
-            ,
+                "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.",
+                None,
                 "Hello World!\n"
             ),
             (
-                "["+"+"*65+".>]"+"+"*66+"." #should print b not ab
-            ,
-                None
-            ,
+                "[" + "+" * 65 + ".>]" + "+" * 66 + ".", #should print b not ab
+                None,
                 "B"
             ),
             (
-                ">+[>,]<[<]>>[.>]"
-            ,
-                "Echo this dude"+"\0"
-            ,
+                ">+[>,]<[<]>>[.>]",
+                "Echo this dude" + "\0",
                 "Echo this dude"
             )
-            ]
+        ]
 
     assert(all(
         map(lambda (prgm, inp, ans):

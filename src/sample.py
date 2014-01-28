@@ -167,4 +167,5 @@ def random_code_flat(apriori=basic_apriori):
 
     return code
 
+
 print(random_code_flat())
