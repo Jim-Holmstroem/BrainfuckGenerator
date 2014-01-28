@@ -9,15 +9,18 @@ from numpy.random import choice
 
 from compiler2 import Loop, Code
 
+import sys
+sys.setrecursionlimit(1024*16)
 
-class AtomicAPriori(dict):
+class AtomicAPriori(dict):  # TODO immutable
+    def __init__(self, *args, **kwargs):
+        super(AtomicAPriori, self).__init__(*args, **kwargs)
+        self[Code()] = 1 - sum(self.values())
+
     def sample(self):
-        p = self.values()
-        p_stop = 1 - sum(p)
-
         return choice(
-            a=self.keys() + [None, ],
-            p=self.values() + [1-sum(self.values()), ]
+            a=self.keys(),
+            p=self.values(),
         )
 
 
@@ -38,9 +41,19 @@ class Prototype(object):
     def __call__(self, *args, **kwargs):
         return self.prototype_base(*(self.args + args), **concatenate(self.kwargs, kwargs))
 
+    def __repr__(self):
+        return "{class_}({prototype_base}, args={args}, kwargs={kwargs})".format(
+            class_=self.__class__.__name__,
+            prototype_base=self.prototype_base.__name__,
+            args=self.args,
+            kwargs=self.kwargs,
+        )
+
+    def __str__(self):
+        return self.__repr__()
 
 def is_loop_prototype(obj):
-    return isinstance(obj, Prototype) and isinstance(obj.prototype_base, Loop)
+    return isinstance(obj, Prototype) and isinstance(obj.prototype_base(), Loop)
 
 
 def scale_atomic_apriori(scale, atomic_apriori):
@@ -85,20 +98,43 @@ class APriori(object):
 a = 0.15
 basic_apriori = APriori(AtomicAPriori(
     {
-        Prototype(Loop): a,
+        Prototype(Loop): a/2,
         Code('>'): a,
         Code('<'): a,
-        Code('.'): 0,
-        Code(','): a,
+        Code('.'): a,
+        Code(','): 0,
         Code('+'): a,
         Code('-'): a,
     }
 ))
+print('p_stop={}'.format(basic_apriori.atomic()[Code()]))
 
 
-def random_code(apriori):
+def random_code(apriori=basic_apriori):
     atomic_sample = apriori.atomic().sample()
 
-    atomic_code = atomic_sample(apriori.sub()) if is_loop_prototype(atomic_sample) else atomic_sample
+    if atomic_sample == Code():
+        return atomic_sample
 
-    return atomic_code + random_code(apriori) if atomic_code is not None else Code()
+    else:
+        if is_loop_prototype(atomic_sample):
+            code = Code([atomic_sample(
+                random_code(apriori.sub()),
+            ), ])
+
+        else:
+            code = atomic_sample
+
+        return code + random_code(apriori)
+
+
+def random_code_flat(apriori):
+    level0_code = takewhile(
+        bool,
+        imap(
+            methodcaller('sample'),
+            repeat(apriori.atomic())
+        )
+    )
+
+
