@@ -1,4 +1,5 @@
-from __future__ import print_function
+from __future__ import print_function, division
+
 import numpy as np
 import operator as op
 import utils as utils
@@ -7,8 +8,8 @@ import utils as utils
 def run(
     program,
     input_data=None,
-    N=256,
-    M=256,
+    N=2 ** 7,
+    M=2 ** (16 - 1),
     print_globals=False,
     print_heap=False
 ):
@@ -24,9 +25,10 @@ def run(
 
     while True:
         if not(pc < len(program)): #program done
-            return
+            raise StopIteration()
 
         command = program[pc]
+
         if print_globals:
             print("{command}:pc({pc}):dp({dp}):heap[dp]({heapdp})".format(
                 command=command,
@@ -34,13 +36,15 @@ def run(
                 dp=dp,
                 heapdp=heap[dp]
             ))
+
         if print_heap:
             print(heap)
+
         if command in '><':
             dp += {
-                    '>':1,
-                    '<':-1
-                    }[command]
+                '>': 1,
+                '<': -1
+            }[command]
             pc += 1
             dp %= M
 
@@ -55,16 +59,20 @@ def run(
         elif command in '.,':
             if command == '.':
                 pc += 1
+
                 yield str(unichr(
                     heap[dp]
                 ))
+
             else:
                 if input_data is None:
                     raise Exception("Trying to read missing input_data")
+
                 if ip < len(input_data):
                     pc += 1
                     heap[dp] = ord(input_data[ip])
                     ip += 1
+
                 else:
                     raise Exception("Read buffer empty") #Some programs have problems with this, probably badly written. (lookup it up)
 
