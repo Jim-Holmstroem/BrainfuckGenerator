@@ -13,10 +13,10 @@ def timelimit(timeout):
         @wraps(function)
         def internal2(*args, **kw):
             class Calculator(threading.Thread):
-                def __init__(self):
-                    threading.Thread.__init__(self)
-                    self.result = None
-                    self.error = None
+                def __init__(self, result=None, error=None):
+                    super(Calculator, self).__init__()
+                    self.result = result
+                    self.error = error
 
                 def run(self):
                     try:
@@ -29,12 +29,14 @@ def timelimit(timeout):
             c.start()
             c.join(timeout)
 
-            if c.isAlive():
+            if c.is_alive():
                 raise TimeoutError('TimedOut')
             if c.error[0]:
                 raise c.error[1]
 
             return c.result
+
+        internal2.__name__ = 'timelimit({})'.format(internal2.__name__)
 
         return internal2
 
@@ -54,14 +56,19 @@ def fetch_until_timeout(iterator, timeout=0.1):
     buffer_ = []
     try:
         def fetch():
-            map(buffer_.append, iterator)
+            map(buffer_.append, iterator)  # TODO mush specialize the timelimit code for iterators this was too easy
 
+        print('start')
         timed_fetch = timelimit(timeout)(fetch)
+        print(timed_fetch)
+        print('timed_fetch()')
         timed_fetch()
         print('fully fetched')
 
     except TimeoutError as te:
+        print('Timeout')
         pass
 
     finally:
+        print('finally return buffer_ {}'.format(type(buffer_)))
         return buffer_
