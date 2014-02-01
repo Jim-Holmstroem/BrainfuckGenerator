@@ -14,8 +14,10 @@ def run(
     print_heap=False
 ):
     """
-    program - a valid program (must be checked or generated valid)
-    input_data - no current support for input data
+    program :
+        A valid program (must be checked or generated valid)
+    input_data :
+        NOTE No current support for input data
     """
     heap = np.zeros(M, dtype=np.int)
     pc = 0 #program pointer
