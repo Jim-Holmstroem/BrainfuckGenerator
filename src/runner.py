@@ -23,15 +23,8 @@ def fetch_until_timeout(timeout=0.1):
         )
 
         process.start()
-
-        stopper = Timer(
-            timeout,
-            partial(process.terminate),
-        )
-        stopper.start()
-
-        process.join()
-        stopper.cancel()
+        process.join(timeout)
+        process.terminate()
 
         buffer_.put(QueueStop())
 
