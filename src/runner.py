@@ -1,74 +1,40 @@
 from __future__ import print_function, division
 
-from functools import wraps, partial
-import threading
+from functools import partial, wraps
 
-class TimeoutError(Exception): pass
-
-def timelimit(timeout):
-    """Copy pasted from http://code.activestate.com/recipes/483752/
-    """
-    def internal(function):
-
-        @wraps(function)
-        def internal2(*args, **kw):
-            class Calculator(threading.Thread):
-                def __init__(self, result=None, error=None):
-                    super(Calculator, self).__init__()
-                    self.result = result
-                    self.error = error
-
-                def run(self):
-                    try:
-                        self.result = function(*args, **kw)
-                    except:
-                        import sys
-                        self.error = sys.exc_info()
-
-            c = Calculator()
-            c.start()
-            c.join(timeout)
-
-            if c.is_alive():
-                raise TimeoutError('TimedOut')
-            if c.error[0]:
-                raise c.error[1]
-
-            return c.result
-
-        internal2.__name__ = 'timelimit({})'.format(internal2.__name__)
-
-        return internal2
-
-    return internal
+from threading import Timer
+from multiprocessing import Process, Manager
+from Queue import Queue
 
 
-def timeout_default(f, default_value, timeout=1):
-    try:
-        timed_f = timelimit(timeout)(f)
-        return timed_f()
-
-    except TimeoutError as te:
-        return default_value
+class QueueStop(object):
+    def __eq__(self, other):
+        return isinstance(other, QueueStop)\
+            and self.__dict__ == other.__dict__
 
 
-def fetch_until_timeout(iterator, timeout=0.1):
-    buffer_ = []
-    try:
-        def fetch():
-            map(buffer_.append, iterator)  # TODO mush specialize the timelimit code for iterators this was too easy
+def fetch_until_timeout(timeout=0.1):
+    def iterator_with_timeout(iterator):
+        buffer_ = Manager().Queue()
 
-        print('start')
-        timed_fetch = timelimit(timeout)(fetch)
-        print(timed_fetch)
-        print('timed_fetch()')
-        timed_fetch()
-        print('fully fetched')
+        process = Process(
+            target=partial(map),
+            args=(buffer_.put, iterator)
+        )
 
-    except TimeoutError as te:
-        print('Timeout')
-        pass
+        process.start()
 
-    finally:
-        print('finally return buffer_ {}'.format(type(buffer_)))
-        return buffer_
+        stopper = Timer(
+            timeout,
+            partial(process.terminate),
+        )
+        stopper.start()
+
+        process.join()
+        stopper.cancel()
+
+        buffer_.put(QueueStop())
+
+        return iter(buffer_.get, QueueStop())
+
+    return iterator_with_timeout
