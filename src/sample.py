@@ -112,13 +112,15 @@ class APriori(object):
             The apriori for the next level
         """
         return self.__class__(
-            atomic_apriori=scale_atomic_apriori(self.scale, self.atomic_apriori),
+            atomic_apriori=scale_atomic_apriori(
+                self.scale,
+                self.atomic_apriori
+            ),
             scale=self.scale
         )
 
 
 basic_apriori = APriori(basic_atomic_apriori)
-print('p_stop={}'.format(basic_apriori.atomic()[Code()]))
 
 
 def random_code(apriori=basic_apriori):
@@ -166,6 +168,3 @@ def random_code_flat(apriori=basic_apriori):
     ))
 
     return code
-
-
-print(random_code_flat())
