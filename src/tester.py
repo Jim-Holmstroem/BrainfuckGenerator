@@ -1,13 +1,15 @@
 from __future__ import print_function, division
 
 from runner import fetch_until_timeout
+from sample import random_code_flat
+from interpreter import run
 
 timeout = 0.1
-for input_ in [
-    xrange(16),
-    range(16),
-    xrange(2 ** 16),
-]:
-    print('results={}'.format(
-        len(list(fetch_until_timeout(timeout=timeout)(input_)))
-    ))
+
+map(print,
+    map(ord,
+        fetch_until_timeout(timeout=timeout)(
+            run(str(random_code_flat()))
+        )
+    )
+)
