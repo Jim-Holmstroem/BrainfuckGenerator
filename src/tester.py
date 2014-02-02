@@ -4,12 +4,16 @@ from runner import fetch_until_timeout
 from sample import random_code_flat
 from interpreter import run
 
-timeout = 0.1
+timeout = 0.01
+
+code = str(random_code_flat())
+
+print(code)
 
 map(print,
     map(ord,
         fetch_until_timeout(timeout=timeout)(
-            run(str(random_code_flat()))
+            run(code)
         )
     )
 )
