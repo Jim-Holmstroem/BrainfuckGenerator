@@ -1,0 +1,35 @@
+digraph bf {
+    a [label="+"];
+    b [label="+"];
+    a -> b;
+
+    c1 [shape=box, label="["];
+    c1e [shape=box, label="]"];
+    c1 -> c1e [style=dotted];
+    c1e -> c1 [style=dotted];
+
+    b -> c1;
+    d [label=">"];
+    c1 -> d;
+
+    c2 [shape=box, label="["];
+    c2e [shape=box, label="]"];
+    c2 -> c2e [style=dotted];
+    c2e -> c2 [style=dotted];
+
+    d -> c2;
+
+    e [label="-"];
+    c2e -> e;
+
+    e -> c1e;
+
+    f [label="-"];
+    c1e -> f;
+
+    g [label="."];
+    h [label="."];
+    g -> h;
+    c2 -> g;
+    h -> c2e;
+}
