@@ -8,9 +8,9 @@ digraph bf {
         loop1.end [shape=box, label="]"];
         loop1.start -> loop1.end -> loop1.start [style=dotted];
 
-        b -> loop1.start
-
         e [label=">"];
+
+        b -> loop1.start
         loop1.start -> e;
 
         subgraph loop2 {
@@ -18,17 +18,16 @@ digraph bf {
             loop2.end [shape=box, label="]"];
             loop2.start -> loop2.end -> loop2.start [style=dotted];
 
-            e -> loop2.start;
-
             g [label="+"];
-            loop2.start -> g;
             h [label="."];
-            g -> h;
             k [label="+"];
-            h -> k;
             l [label="+"];
-            k -> l;
 
+            e -> loop2.start;
+            loop2.start -> g;
+            g -> h;
+            h -> k;
+            k -> l;
             l -> loop2.end;
 
         }
