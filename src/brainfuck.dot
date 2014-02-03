@@ -3,33 +3,97 @@ digraph bf {
     b [label="+"];
     a -> b;
 
-    c1 [shape=box, label="["];
-    c1e [shape=box, label="]"];
-    c1 -> c1e [style=dotted];
-    c1e -> c1 [style=dotted];
+    subgraph loop1 { //except for loop1.start/loop1.end the inner stuff will only connect to stuff inside the subgraph
+        loop1.start [shape=box, label="["];
+        loop1.end [shape=box, label="]"];
+        loop1.start -> loop1.end -> loop1.start [style=dotted];
 
-    b -> c1;
-    d [label=">"];
-    c1 -> d;
+        b -> loop1.start
 
-    c2 [shape=box, label="["];
-    c2e [shape=box, label="]"];
-    c2 -> c2e [style=dotted];
-    c2e -> c2 [style=dotted];
+        e [label=">"];
+        loop1.start -> e;
 
-    d -> c2;
+        subgraph loop2 {
+            loop2.start [shape=box, label="["];
+            loop2.end [shape=box, label="]"];
+            loop2.start -> loop2.end -> loop2.start [style=dotted];
 
-    e [label="-"];
-    c2e -> e;
+            e -> loop2.start;
 
-    e -> c1e;
+            g [label="+"];
+            loop2.start -> g;
+            h [label="."];
+            g -> h;
+            k [label="+"];
+            h -> k;
+            l [label="+"];
+            k -> l;
 
-    f [label="-"];
-    c1e -> f;
+            l -> loop2.end;
 
-    g [label="."];
-    h [label="."];
-    g -> h;
-    c2 -> g;
-    h -> c2e;
+        }
+
+        loop2.end -> loop3.start;
+
+        subgraph loop3 {
+            loop3.start [shape=box, label="["];
+            loop3.end [shape=box, label="]"];
+            loop3.start -> loop3.end -> loop3.start [style=dotted];
+
+            m [label="+"];
+            loop3.start -> m;
+            n [label="."];
+            m -> n;
+
+            n -> loop3.end;
+
+            loop3.end -> f;
+        }
+
+        f [label="<"];
+        f -> loop1.end;
+    }
+
+    d [label="-"];
+    loop1.end -> d;
+
+//    c1 [shape=box, label="["];
+//    c1e [shape=box, label="]"];
+//    c1 -> c1e [style=dotted];
+//    c1e -> c1 [style=dotted];
+
+//    b -> c1;
+
+//    d [label=">"];
+//    c1 -> d;
+
+    //loop [shape=record, label="{ <start> [ | <end> ]}"];  kinda cool but it destroys the pretty layout
+
+//    c2 [shape=box, label="["];
+//    c2e [shape=box, label="]"];
+//    c2 -> c2e [style=dotted];
+//    c2e -> c2 [style=dotted];
+
+    //d -> loop:start
+//    d -> c2;
+
+//    e [label="-"];
+//    c2e -> e;
+    //loop:end -> e;
+
+//    e -> c1e;
+
+//    f [label="-"];
+//    c1e -> f;
+
+ //   g [label="."];
+ //   h [label="."];
+//    g -> h;
+//    c2 -> g;
+//    h -> c2e;
+    //loop:start -> g;
+    //h -> loop:end;
+
+
+
 }
