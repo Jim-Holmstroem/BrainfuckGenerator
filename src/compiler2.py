@@ -7,6 +7,8 @@ from itertools import imap, chain
 immutablelist = tuple  # HACK
 
 
+# FIXME compile need Code('++[--]') which should be a representation of the already compiled code, this makes some stuff a bit weird.
+
 class Code(immutablelist):
     def __str__(self):
         return ''.join(
