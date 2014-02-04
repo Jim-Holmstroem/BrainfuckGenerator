@@ -5,6 +5,7 @@ from functools import partial, wraps
 from collections import namedtuple
 
 code = compile(Code('++[>.[+.]-]-'))
+code = compile(Code('[]'))
 
 
 map_apply = lambda fs, *args, **kwargs: [f(*args, **kwargs) for f in fs]
@@ -45,12 +46,14 @@ def dot(name, code):
 
             return rendering
 
-        nodes, starts, ends = map(list, zip(
-            *list(starmap(
-                render_node,
-                enumerate(code)
+        nodes, starts, ends = (
+            map(list, zip(
+                *list(starmap(
+                    render_node,
+                    enumerate(code)
+                ))
             ))
-        ))
+        ) if len(code) > 0 else ([], [], [])
 
         loop_nodes = map_apply(
             [
@@ -66,20 +69,23 @@ def dot(name, code):
             ends[1:],
         )
 
-        loop_connections = [
-            '{loop_name}.start -> {loop_name}.end'
-            ' -> {loop_name}.start [style=dotted];'.format(
-                loop_name=name,
-            ),
-            '{loop_name}.start -> {start};'.format(
-                loop_name=name,
-                start=starts[0],
-            ),
-            '{end} -> {loop_name}.end;'.format(
-                loop_name=name,
-                end=ends[-1],
-            ),
-        ] if isinstance(code, Loop) else []
+        loop_connections = (
+            [
+                '{loop_name}.start -> {loop_name}.end'
+                ' -> {loop_name}.start [style=dotted];'.format(
+                    loop_name=name,
+                ),
+                '{loop_name}.start -> {start};'.format(
+                    loop_name=name,
+                    start=starts[0] if len(code) > 0 else '{loop_name}.end'.format(loop_name=name),
+                ),
+            ] + ([
+                '{end} -> {loop_name}.end;'.format(
+                    loop_name=name,
+                    end=ends[-1],
+                ),
+            ]) if len(code) > 0 else []
+        ) if isinstance(code, Loop) else []
 
         # The order of the nodes will effect the layou algorithm
         body = "{nodes}\n{connections}".format(
@@ -101,7 +107,7 @@ def dot(name, code):
             (
                 '{loop_name}.end'.format(loop_name=name),
                 '{loop_name}.start'.format(loop_name=name)
-            ) if isinstance(code, Loop) else (starts[0], ends[-1])
+            ) if isinstance(code, Loop) else ((starts[0], ends[-1]) if len(code) > 0 else (None, None))
         )
 
     dot_data, start, end = _dot(type_='digraph', name=name, code=code)
