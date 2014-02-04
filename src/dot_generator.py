@@ -55,28 +55,39 @@ def dot(name, code):
         loop_nodes = map_apply(
             [
                 '{loop_name}.start [label="[", shape=box];'.format,
-                '{loop_name}.end [label="]", shape=box]'.format,
+                '{loop_name}.end [label="]", shape=box];'.format,
             ],
             loop_name=name
         ) if isinstance(code, Loop) else []
 
         connections = map(
-            "{} -> {}".format,
+            "{} -> {};".format,
             starts[:-1],
             ends[1:],
         )
 
         loop_connections = [
             '{loop_name}.start -> {loop_name}.end'
-            ' -> {loop_name}.start [style=dotted];'.format(loop_name=name),
+            ' -> {loop_name}.start [style=dotted];'.format(
+                loop_name=name,
+            ),
+            '{loop_name}.start -> {start};'.format(
+                loop_name=name,
+                start=starts[0],
+            ),
+            '{end} -> {loop_name}.end;'.format(
+                loop_name=name,
+                end=ends[-1],
+            ),
         ] if isinstance(code, Loop) else []
 
+        # The order of the nodes will effect the layou algorithm
         body = "{nodes}\n{connections}".format(
             nodes='\n'.join(
-                nodes + loop_nodes
+                loop_nodes + nodes,
             ),
             connections='\n'.join(
-                connections + loop_connections
+                loop_connections + connections,
             )
         )
 
@@ -88,8 +99,8 @@ def dot(name, code):
 
         return (dot_data, ) + (
             (
-                '{loop_name}.start'.format(loop_name=name),
-                '{loop_name}.end'.format(loop_name=name)
+                '{loop_name}.end'.format(loop_name=name),
+                '{loop_name}.start'.format(loop_name=name)
             ) if isinstance(code, Loop) else (starts[0], ends[-1])
         )
 
