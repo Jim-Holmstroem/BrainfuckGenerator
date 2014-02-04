@@ -4,8 +4,7 @@ from compiler2 import *
 from functools import partial, wraps
 from collections import namedtuple
 
-code = compile(Code('++[>.[+.]-]-'))
-code = compile(Code('[]'))
+code = compile(Code('++[>.[+.[]]-][[]]'))
 
 
 map_apply = lambda fs, *args, **kwargs: [f(*args, **kwargs) for f in fs]
@@ -26,22 +25,25 @@ def tab(data, on='\n', tab_token='    '):
 
 
 def dot(name, code):
-    def _dot(type_, name, code, prefix=''):
+    def _dot(type_, name, code, prefix='', name_split='.'):
         def render_node(id_, code):
             name = '{prefix}{id_}'.format(
                 prefix=prefix,
                 id_=id_,
             )
             rendering = (
-                '{id_} [label="{code}"];'.format(
+                '"{id_}" [label="{code}"];'.format(
                     id_=name, code=code
                 ), name, name
             ) if not(isinstance(code, Loop)) else\
                 _dot(
-                    type_="subgraph",
+                    type_='subgraph',
                     name=name,
                     code=code,
-                    prefix='{name}.'.format(name=name),
+                    prefix='{name}{name_split}'.format(
+                        name=name,
+                        name_split=name_split
+                    ),
                 )
 
             return rendering
@@ -57,34 +59,44 @@ def dot(name, code):
 
         loop_nodes = map_apply(
             [
-                '{loop_name}.start [label="[", shape=box];'.format,
-                '{loop_name}.end [label="]", shape=box];'.format,
+                '"{loop_name}{name_split}start" [label="[", shape=box];'.format,
+                '"{loop_name}{name_split}end" [label="]", shape=box];'.format,
             ],
-            loop_name=name
+            loop_name=name,
+            name_split=name_split,
         ) if isinstance(code, Loop) else []
 
         connections = map(
-            "{} -> {};".format,
+            '"{}" -> "{}";'.format,
             starts[:-1],
             ends[1:],
         )
 
         loop_connections = (
             [
-                '{loop_name}.start -> {loop_name}.end'
-                ' -> {loop_name}.start [style=dotted];'.format(
+                '"{loop_name}{name_split}start" -> "{loop_name}{name_split}end"'
+                ' -> "{loop_name}{name_split}start" [style=dotted];'.format(
                     loop_name=name,
+                    name_split=name_split,
                 ),
-                '{loop_name}.start -> {start};'.format(
+                '"{loop_name}{name_split}start" -> "{start}";'.format(
                     loop_name=name,
-                    start=starts[0] if len(code) > 0 else '{loop_name}.end'.format(loop_name=name),
+                    name_split=name_split,
+                    start=starts[0] if len(code) > 0\
+                        else '{loop_name}{name_split}end'.format(
+                            loop_name=name,
+                            name_split=name_split,
+                        ),
                 ),
-            ] + ([
-                '{end} -> {loop_name}.end;'.format(
-                    loop_name=name,
-                    end=ends[-1],
-                ),
-            ]) if len(code) > 0 else []
+            ] + (
+                [
+                    '"{end}" -> "{loop_name}{name_split}end";'.format(
+                        loop_name=name,
+                        name_split=name_split,
+                        end=ends[-1],
+                    ),
+                ] if len(code) > 0 else []
+            )
         ) if isinstance(code, Loop) else []
 
         # The order of the nodes will effect the layou algorithm
@@ -97,7 +109,7 @@ def dot(name, code):
             )
         )
 
-        dot_data = '{type_} {name} {{\n{body}\n}}'.format(
+        dot_data = '{type_} "{name}" {{\n{body}\n}};'.format(
             type_=type_,
             name=name,
             body=tab(body),
@@ -105,9 +117,18 @@ def dot(name, code):
 
         return (dot_data, ) + (
             (
-                '{loop_name}.end'.format(loop_name=name),
-                '{loop_name}.start'.format(loop_name=name)
-            ) if isinstance(code, Loop) else ((starts[0], ends[-1]) if len(code) > 0 else (None, None))
+                '{loop_name}{name_split}end'.format(
+                    loop_name=name,
+                    name_split=name_split,
+                ),
+                '{loop_name}{name_split}start'.format(
+                    loop_name=name,
+                    name_split=name_split,
+                ),
+            ) if isinstance(code, Loop)\
+                else (
+                    (starts[0], ends[-1]) if len(code) > 0 else (None, None)
+                )
         )
 
     dot_data, start, end = _dot(type_='digraph', name=name, code=code)
