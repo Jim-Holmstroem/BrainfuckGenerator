@@ -41,11 +41,6 @@ class Loop(Code):
     def __str__(self):
         return "[{}]".format(super(Loop, self).__str__())
 
-    def __len__(self):
-        """Acts as weight when sampling/slicing
-        """
-        return 1 + super(Loop, self).__len__()
-
 
 class SuperProgram(object):
     """Code like '+++++' could be a "superpixel" and treated as '+=5' to optimize
