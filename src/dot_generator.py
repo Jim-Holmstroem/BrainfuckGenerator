@@ -100,8 +100,8 @@ def dot(name, code):
 
         connections = map(
             '"{}" -> "{}";'.format,
-            starts[:-1],
-            ends[1:],
+            ends[:-1],
+            starts[1:],
         )
 
         loop_connections = (
@@ -147,13 +147,13 @@ def dot(name, code):
             body=tab(body),
         )
 
-        return (dot_data, ) + (
+        value = (dot_data, ) + (
             (
-                '{loop_name}{name_split}end'.format(
+                '{loop_name}{name_split}start'.format(
                     loop_name=name,
                     name_split=name_split,
                 ),
-                '{loop_name}{name_split}start'.format(
+                '{loop_name}{name_split}end'.format(
                     loop_name=name,
                     name_split=name_split,
                 ),
