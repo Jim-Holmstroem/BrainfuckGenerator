@@ -7,7 +7,8 @@ from collections import namedtuple
 
 
 code = compile(Code('[+.[]+]-[[+]>]-[[]]'))
-code = compile(Code(str(random_code_flat())))
+#code = compile(Code(str(random_code_flat())))
+
 
 def render_code(code, prefix=''):
     def render(elem):
@@ -178,9 +179,10 @@ print(dot_data)
 import pydot
 graph = pydot.graph_from_dot_data(dot_data)
 
-graph.write_dot('brainfuck/brainfuck.dot')
-graph.write_pdf('brainfuck/brainfuck.pdf')
-graph.write_svg('brainfuck/brainfuck.svg')
-graph.write_fig('brainfuck/brainfuck.fig')
-graph.write_png('brainfuck/brainfuck.png')
-graph.write_ps('brainfuck/brainfuck.ps')
+def render(graph, format_='pdf'):
+    methodcaller(
+        'write_{}'.format(format_),
+        'brainfuck/brainfuck.{}'.format(format_),
+    )(graph)
+
+map(partial(render, graph), ['dot', 'pdf', 'svg', 'fig', 'png', 'ps'])
