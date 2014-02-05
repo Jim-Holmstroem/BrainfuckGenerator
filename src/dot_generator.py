@@ -164,13 +164,23 @@ def dot(name, code):
                 )
         )
 
+        return value
+
     dot_data, start, end = _dot(type_='digraph', name=name, code=code)
 
     return dot_data
 
 print(code)
 dot_data = dot('brainfuck', code)
+
 print(dot_data)
 
 import pydot
-pydot.graph_from_dot_data(dot_data).write_pdf('brainfuck.pdf')
+graph = pydot.graph_from_dot_data(dot_data)
+
+graph.write_dot('brainfuck/brainfuck.dot')
+graph.write_pdf('brainfuck/brainfuck.pdf')
+graph.write_svg('brainfuck/brainfuck.svg')
+graph.write_fig('brainfuck/brainfuck.fig')
+graph.write_png('brainfuck/brainfuck.png')
+graph.write_ps('brainfuck/brainfuck.ps')
