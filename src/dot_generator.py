@@ -106,7 +106,8 @@ def dot(name, code):
 
         loop_connections = (
             [
-                '"{loop_name}{name_split}start" -> "{loop_name}{name_split}end"'
+                '"{loop_name}{name_split}start"'
+                ' -> "{loop_name}{name_split}end"'
                 ' -> "{loop_name}{name_split}start" [style=dotted];'.format(
                     loop_name=name,
                     name_split=name_split,
