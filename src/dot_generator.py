@@ -41,7 +41,23 @@ def tab(data, on='\n', tab_token='    '):
 
 
 def dot(name, code):
+    """
+    Parameters
+    ----------
+    name :
+    code :
+
+    Returns
+    -------
+    """
     def _dot(type_, name, code, prefix='', name_split='.'):
+        """
+        Parameters
+        ----------
+        Returns
+        -------
+        : dot_data, start, end
+        """
         def render_node(id_, code):
             name = '{prefix}{id_}'.format(
                 prefix=prefix,
