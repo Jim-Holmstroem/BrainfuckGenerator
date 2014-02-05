@@ -5,7 +5,22 @@ from sample import random_code_flat
 from functools import partial, wraps
 from collections import namedtuple
 
-code = compile(Code('++[>.[+.[]]-][[]]'))
+
+code = compile(Code('[+.[]+]-[[+]>]-[[]]'))
+code = compile(Code(str(random_code_flat())))
+
+def render_code(code, prefix=''):
+    def render(elem):
+        if isinstance(elem, Loop):
+            print('{prefix}loop:{loop}'.format(prefix=prefix, loop=elem))
+            render_code(elem, prefix='    {prefix}'.format(prefix=prefix))
+        else:
+            print('{prefix}{elem}'.format(
+                prefix=prefix,
+                elem=elem,
+            ))
+
+    map(render, code)
 
 
 map_apply = lambda fs, *args, **kwargs: [f(*args, **kwargs) for f in fs]
