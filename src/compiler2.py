@@ -31,8 +31,12 @@ class Code(immutablelist):
             super(Code, self).__add__(other)
         )
 
-    def __len__(self):
+    def count(self):
         """Acts as weight when sampling/slicing
+
+        Note
+        ----
+        Could be __len__ but then it screws with other things instead, better to have it this way
         """
         return sum(map(len, iter(self)))
 
@@ -41,6 +45,8 @@ class Loop(Code):
     def __str__(self):
         return "[{}]".format(super(Loop, self).__str__())
 
+    def count(self):
+        return 1 + super(Loop, self).count()
 
 class SuperProgram(object):
     """Code like '+++++' could be a "superpixel" and treated as '+=5' to optimize
