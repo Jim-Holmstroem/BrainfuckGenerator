@@ -6,12 +6,6 @@ from collections import defaultdict
 import numpy as np
 
 
-try:
-    from functools import lru_cache
-except:
-    from lru import LRUCache as lru_cache
-
-
 def only_program_characters(program):
     program_translation_table = defaultdict(
         lambda: None,
