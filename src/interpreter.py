@@ -2,7 +2,8 @@ from __future__ import print_function, division
 
 import numpy as np
 import operator as op
-import utils as utils
+
+import utils as utils  # TODO import the normal way
 
 
 def run(
@@ -23,7 +24,9 @@ def run(
     pc = 0 #program pointer
     dp = 0 #data pointer
     ip = 0 #input pointer (change input to a stream instead
-    bracket_levels = utils.bracket_levels(program)
+    bracket_levels = utils.bracket_levels(
+        utils.only_program_characters(program)
+    )
 
     while True:
         if not(pc < len(program)): #program done
