@@ -1,6 +1,30 @@
 from __future__ import print_function
 
+
+from collections import defaultdict
+
 import numpy as np
+
+
+def only_program_characters(program):
+    program_translation_table = defaultdict(
+        lambda: None,
+        {
+            ord('+'): ord('+'),
+            ord('-'): ord('-'),
+            ord('>'): ord('>'),
+            ord('<'): ord('<'),
+            ord('['): ord('['),
+            ord(']'): ord(']'),
+            ord('.'): ord('.'),
+            ord(','): ord(','),
+        }
+    )
+    filtered_program = unicode(program).translate(
+        program_translation_table
+    )
+
+    return filtered_program
 
 
 def bracket_levels(program):
