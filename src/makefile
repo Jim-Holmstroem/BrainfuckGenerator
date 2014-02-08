@@ -6,6 +6,7 @@ clean:
 	find . -type f -name "*.pyc" -exec rm -f {} \;
 	find . -type f -name "*.pyo" -exec rm -f {} \;
 	rm -f interpreter.c interpreter.so interpreter.html
+	rm -rf __pycache__
 
 test:
 	nosetests -v -s

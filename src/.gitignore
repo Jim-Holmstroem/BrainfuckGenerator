@@ -2,3 +2,4 @@
 *.swo
 interpreter.*
 !interpreter.pyx
+__pycache__
