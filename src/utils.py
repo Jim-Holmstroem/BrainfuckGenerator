@@ -6,6 +6,12 @@ from collections import defaultdict
 import numpy as np
 
 
+try:
+    from functools import lru_cache
+except:
+    from lru import LRUCache as lru_cache
+
+
 def only_program_characters(program):
     program_translation_table = defaultdict(
         lambda: None,
@@ -54,6 +60,7 @@ def bracket_levels(program):
 
     level = brackets.cumsum() + locate_char(program, ']')
     bracket_levels = zip(brackets, level)
+
     return bracket_levels
 
 
