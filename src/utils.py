@@ -27,7 +27,7 @@ def only_program_characters(program):
     return filtered_program
 
 
-def bracket_levels(program):
+def bracket_levels(program):  # TODO should rewrite or replace this
     """
 
     """
