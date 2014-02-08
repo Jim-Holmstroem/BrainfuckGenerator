@@ -4,6 +4,7 @@ import numpy as np
 import operator as op
 
 import utils as utils  # TODO import the normal way
+from lru import lru_cache
 
 
 def run(
@@ -30,10 +31,17 @@ def run(
     bracket_levels = utils.bracket_levels(
         program
     )
-    len_program = len(program)  # NOTE optimization
+
+    @lru_cache(maxsize=1024)
+    def find_match_forward(pc):
+        return bracket_levels[pc:].index((-1, bracket_levels[pc][1]))
+
+    @lru_cache(maxsize=1024)
+    def find_match_backward(pc):
+        return bracket_levels[:pc][::-1].index((1, bracket_levels[pc][1]))
 
     while True:
-        if not(pc < len_program): #program done
+        if not(pc < len(program)):
             raise StopIteration()
 
         command = program[pc]
@@ -92,7 +100,7 @@ def run(
         elif command in '[]':
             if command == '[':
                 if heap[dp] == 0:
-                    pc += bracket_levels[pc:].index((-1, bracket_levels[pc][1]))
+                    pc += find_match_forward(pc)
 
                 else:
                     pc += 1
@@ -102,7 +110,7 @@ def run(
                     pc += 1
 
                 else:
-                    pc -= bracket_levels[:pc][::-1].index((1, bracket_levels[pc][1]))
+                    pc -= find_match_backward(pc)
 
         else:
             raise Exception(  # NOTE Shouldn't occure
