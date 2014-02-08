@@ -3,7 +3,7 @@ from __future__ import print_function, division
 from functools import partial
 from nose.tools import assert_list_equal
 
-from compiler2 import compile, Code
+from compiler import compile, Code
 
 lift_str = partial(map, str)
 

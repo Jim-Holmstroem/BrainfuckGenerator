@@ -8,7 +8,7 @@ from abc import abstractmethod, ABCMeta
 
 from numpy.random import choice
 
-from compiler2 import Loop, Code
+from compiler import Loop, Code
 
 import sys
 sys.setrecursionlimit(1024 * 128)

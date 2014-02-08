@@ -1,12 +1,12 @@
 from __future__ import print_function
 
-from compiler2 import Code, Loop, compile
+from compiler import Code, Loop, compile
 from sample import random_code_flat
 from functools import partial, wraps
 from collections import namedtuple
 
 
-code = compile(Code('[+.[]+]-[[+]>]-[[]]'))
+code = compile(Code('[+.[]+>]>>-[[+]>]-[[]]'))
 #code = compile(Code(str(random_code_flat())))
 
 
