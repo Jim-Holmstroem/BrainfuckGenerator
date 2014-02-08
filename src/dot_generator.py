@@ -185,7 +185,7 @@ graph = pydot.graph_from_dot_data(dot_data)
 def render(graph, format_='pdf'):
     methodcaller(
         'write_{}'.format(format_),
-        'brainfuck/brainfuck.{}'.format(format_),
+        '../output/brainfuck.{}'.format(format_),
     )(graph)
 
 map(partial(render, graph), ['dot', 'pdf', 'svg', 'fig', 'png', 'ps'])
