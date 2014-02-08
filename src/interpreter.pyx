@@ -14,10 +14,8 @@ from lru import lru_cache
 def run(
     program,
     input_data=None,
-    N=2 ** 7,
-    M=2 ** (16 - 1),
-#    print_globals=False,
-#    print_heap=False
+    Py_ssize_t N=2 ** 7,
+    Py_ssize_t M=2 ** (16 - 1),
 ):
     """
     program :
@@ -25,7 +23,8 @@ def run(
     input_data :
         NOTE No current support for input data
     """
-    cdef np.ndarray heap = np.zeros(M, dtype=np.int)
+    assert(M <= 2 ** (16 - 1))
+    cdef int heap[32768] #np.zeros(M, dtype=np.int)
     cdef Py_ssize_t pc = 0 #program pointer
     cdef Py_ssize_t dp = 0 #data pointer
     cdef Py_ssize_t ip = 0 #input pointer (change input to a stream instead
@@ -35,14 +34,22 @@ def run(
     bracket_levels = utils.bracket_levels(
         program
     )
+    bracket_levels_reversed = list(reversed(bracket_levels))
 
     @lru_cache(maxsize=1024)
     def find_match_forward(pc):
-        return bracket_levels[pc:].index((-1, bracket_levels[pc][1]))
+        return bracket_levels.index(
+            (-1, bracket_levels[pc][1]),
+            pc
+        ) - pc
 
     @lru_cache(maxsize=1024)
     def find_match_backward(pc):
-        return bracket_levels[:pc][::-1].index((1, bracket_levels[pc][1]))
+        pc_reversed = len(bracket_levels) - pc
+        return bracket_levels_reversed.index(
+            (1, bracket_levels[pc][1]),
+            pc_reversed
+        ) - pc_reversed
 
     angular_bracket = {'>': 1, '<': -1}
     addition = {'+': 1, '-': -1}
@@ -52,17 +59,6 @@ def run(
             raise StopIteration()
 
         command = program[pc]
-
-        #if print_globals:
-        #    print("{command}:pc({pc}):dp({dp}):heap[dp]({heapdp})".format(
-        #        command=command,
-        #        pc=pc,
-        #        dp=dp,
-        #        heapdp=heap[dp]
-        #    ))
-
-        #if print_heap:
-        #    print(heap)
 
         if command in '><':
             if command == '>':
