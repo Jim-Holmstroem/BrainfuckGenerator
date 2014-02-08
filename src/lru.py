@@ -56,6 +56,12 @@ def lru_cache(maxsize=100, typed=False):
 
     See:  http://en.wikipedia.org/wiki/Cache_algorithms#Least_Recently_Used
 
+
+    NOTE
+    ----
+    Not threadsafe any more for performance reasons
+
+
     """
 
     # Users should only access the lru_cache through its public API:
