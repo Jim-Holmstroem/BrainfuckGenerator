@@ -40,36 +40,43 @@ def run(
     def find_match_backward(pc):
         return bracket_levels[:pc][::-1].index((1, bracket_levels[pc][1]))
 
+    angular_bracket = {'>': 1, '<': -1}
+    addition = {'+': 1, '-': -1}
+
     while True:
         if not(pc < len(program)):
             raise StopIteration()
 
         command = program[pc]
 
-        if print_globals:
-            print("{command}:pc({pc}):dp({dp}):heap[dp]({heapdp})".format(
-                command=command,
-                pc=pc,
-                dp=dp,
-                heapdp=heap[dp]
-            ))
+        #if print_globals:
+        #    print("{command}:pc({pc}):dp({dp}):heap[dp]({heapdp})".format(
+        #        command=command,
+        #        pc=pc,
+        #        dp=dp,
+        #        heapdp=heap[dp]
+        #    ))
 
-        if print_heap:
-            print(heap)
+        #if print_heap:
+        #    print(heap)
 
         if command in '><':
-            dp += {
-                '>': 1,
-                '<': -1
-            }[command]
+            if command == '>':
+                dp += 1
+
+            else:
+                dp -= 1
+
             pc += 1
             dp %= M
 
         elif command in '+-':
-            heap[dp] += {
-                '+': 1,
-                '-': -1,
-            }[command] #NOTE be carefull doing mod on negative numbers.
+            if command == '+':
+                heap[dp] += 1
+
+            else:
+                heap[dp] -= 1
+
             heap[dp] %= N
             pc += 1
 
