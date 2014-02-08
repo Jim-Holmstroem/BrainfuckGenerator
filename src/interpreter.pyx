@@ -1,19 +1,23 @@
 from __future__ import print_function, division
 
-import numpy as np
 import operator as op
+
+import cython
+import numpy as np
+cimport numpy as np
 
 import utils as utils  # TODO import the normal way
 from lru import lru_cache
 
-
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def run(
     program,
     input_data=None,
     N=2 ** 7,
     M=2 ** (16 - 1),
-    print_globals=False,
-    print_heap=False
+#    print_globals=False,
+#    print_heap=False
 ):
     """
     program :
@@ -21,10 +25,10 @@ def run(
     input_data :
         NOTE No current support for input data
     """
-    heap = np.zeros(M, dtype=np.int)
-    pc = 0 #program pointer
-    dp = 0 #data pointer
-    ip = 0 #input pointer (change input to a stream instead
+    cdef np.ndarray heap = np.zeros(M, dtype=np.int)
+    cdef Py_ssize_t pc = 0 #program pointer
+    cdef Py_ssize_t dp = 0 #data pointer
+    cdef Py_ssize_t ip = 0 #input pointer (change input to a stream instead
 
     program = utils.only_program_characters(program)
 
