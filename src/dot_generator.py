@@ -1,9 +1,12 @@
 from __future__ import print_function
 
-from compiler import Code, Loop, compile
-from sample import random_code_flat
+from itertools import starmap
+from operator import methodcaller
 from functools import partial, wraps
 from collections import namedtuple
+
+from compiler import Code, Loop, compile
+from sample import random_code_flat
 
 
 code = compile(Code('[+.[]+>]>>-[[+]>]-[[]]'))
