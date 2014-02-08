@@ -5,5 +5,7 @@ interpreter:
 clean:
 	find . -type f -name "*.pyc" -exec rm -f {} \;
 	find . -type f -name "*.pyo" -exec rm -f {} \;
+	rm -f interpreter.c interpreter.so interpreter.html
+
 test:
 	nosetests -v -s
