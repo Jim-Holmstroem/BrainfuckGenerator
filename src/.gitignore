@@ -1,2 +1,4 @@
 *.swp
 *.swo
+interpreter.*
+!interpreter.pyx
