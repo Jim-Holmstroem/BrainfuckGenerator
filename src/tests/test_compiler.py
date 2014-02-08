@@ -24,13 +24,3 @@ def test_str_identity_holds_after_compile():
         lift_str(map(compile, test_input)),
         lift_str(test_input),
     )
-    print(
-        "test: {status}".format(
-            status=("Fail", "OK")[
-                all(map(
-                    lambda code: str(code) == str(compile(code)),
-                    test_input
-                ))
-            ]
-        )
-    )
