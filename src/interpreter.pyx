@@ -13,7 +13,7 @@ from lru import lru_cache
 @cython.wraparound(False)
 def run(
     program,
-    input_data=None,
+    input_data='',
     Py_ssize_t N=2 ** 7,
     Py_ssize_t M=2 ** (16 - 1),
 ):
@@ -24,7 +24,10 @@ def run(
         NOTE No current support for input data
     """
     assert(M <= 2 ** (16 - 1))
+    assert(len(program) <= 2 ** (16 - 1))  # NOTE because of the bracket cache
+
     cdef int heap[32768] #np.zeros(M, dtype=np.int)
+
     cdef Py_ssize_t pc = 0 #program pointer
     cdef Py_ssize_t dp = 0 #data pointer
     cdef Py_ssize_t ip = 0 #input pointer (change input to a stream instead
@@ -36,14 +39,32 @@ def run(
     )
     bracket_levels_reversed = list(reversed(bracket_levels))
 
-    @lru_cache(maxsize=1024)
+    def int_argument_cache(f):
+        cdef int program[32768]
+        cdef int calculated[32768]
+        def _f(Py_ssize_t pc):
+            if calculated[pc]:
+                return program[pc]
+
+            else:
+                program[pc] = f(pc)
+                calculated[pc] = 1
+
+                return program[pc]
+
+        return _f
+
+
+    #@lru_cache(maxsize=1024)
+    @int_argument_cache
     def find_match_forward(pc):
         return bracket_levels.index(
             (-1, bracket_levels[pc][1]),
             pc
         ) - pc
 
-    @lru_cache(maxsize=1024)
+    #@lru_cache(maxsize=1024)
+    @int_argument_cache
     def find_match_backward(pc):
         pc_reversed = len(bracket_levels) - pc
         return bracket_levels_reversed.index(
