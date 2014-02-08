@@ -30,9 +30,10 @@ def run(
     bracket_levels = utils.bracket_levels(
         program
     )
+    len_program = len(program)  # NOTE optimization
 
     while True:
-        if not(pc < len(program)): #program done
+        if not(pc < len_program): #program done
             raise StopIteration()
 
         command = program[pc]
@@ -76,32 +77,33 @@ def run(
                 if input_data is None:
                     raise Exception("Trying to read missing input_data")
 
-                if ip < len(input_data):
+                if ip < len(input_data):  # FIXME should be able to handle iterator .nex() and then count that stuff, remove ``ip``
                     pc += 1
                     heap[dp] = ord(input_data[ip])
                     ip += 1
 
                 else:
-                    raise Exception("Read buffer empty") #Some programs have problems with this, probably badly written. (lookup it up)
+                    raise Exception(
+                        "Read buffer empty"
+                    )
+                    # Some programs have problems with this,
+                    # probably badly written. (lookup it up)
 
         elif command in '[]':
             if command == '[':
                 if heap[dp] == 0:
-                    pc += utils.find_index(
-                        lambda x: x == (-1, bracket_levels[pc][1]),
-                        bracket_levels[pc:]
-                    )
+                    pc += bracket_levels[pc:].index((-1, bracket_levels[pc][1]))
 
                 else:
                     pc += 1
+
             else:
                 if heap[dp] == 0:
                     pc += 1
+
                 else:
-                    pc -= utils.find_index(
-                        lambda x: x == (1, bracket_levels[pc][1]),
-                        bracket_levels[:pc][::-1]
-                    ) + 1
+                    pc -= bracket_levels[:pc][::-1].index((1, bracket_levels[pc][1]))
+
         else:
             raise Exception(  # NOTE Shouldn't occure
                 "Unrecognized command '{command}'".format(
