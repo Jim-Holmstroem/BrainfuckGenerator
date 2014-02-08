@@ -24,8 +24,11 @@ def run(
     pc = 0 #program pointer
     dp = 0 #data pointer
     ip = 0 #input pointer (change input to a stream instead
+
+    program = utils.only_program_characters(program)
+
     bracket_levels = utils.bracket_levels(
-        utils.only_program_characters(program)
+        program
     )
 
     while True:
@@ -100,4 +103,8 @@ def run(
                         bracket_levels[:pc][::-1]
                     ) + 1
         else:
-            raise Exception("Unrecognized command '{command}'".format(command=command))
+            raise Exception(  # NOTE Shouldn't occure
+                "Unrecognized command '{command}'".format(
+                    command=command
+                )
+            )
