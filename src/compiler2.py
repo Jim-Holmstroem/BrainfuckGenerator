@@ -117,6 +117,15 @@ def compile_with_flat(program_code):
 
 
 def compile(program_code):
-    program, flat = compile_with_flat(program_code)
+    """
+    EBNF-syntax
+    -----------
+    program = { atomic | loop }
+    loop = "[", program , "]"
+    atomic = "+" | "-" | ">" | "<" | "." | ","
+    """
+    program, flat = compile_with_flat(
+        program_code
+    )
 
     return program
