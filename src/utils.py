@@ -2,22 +2,36 @@ from __future__ import print_function
 
 import numpy as np
 
+
 def bracket_levels(program):
     """
 
     """
     def locate_char(string, char):
         """
+        Parameters
+        ----------
+        string : string
 
-        returns a list with all the occurances of char in string set to 1 else 0
+        char : char
+
+        Returns
+        -------
+        char_locations : [int]
+            All the occurances of char in string set to 1 else 0
         """
-        return (np.array(map(ord, program))==ord(char)).astype(np.int)
+        char_locations = (
+            np.array(map(ord, program)) == ord(char)
+        ).astype(np.int)
+
+        return char_locations
 
     brackets = locate_char(program, '[') - locate_char(program, ']')
 
     level = brackets.cumsum() + locate_char(program, ']')
     bracket_levels = zip(brackets, level)
     return bracket_levels
+
 
 def find_index(c, seq):
     """
@@ -31,6 +45,9 @@ def find_index(c, seq):
 
 
 def register_traceback():
+    """
+    Debugging
+    """
     indentation_spacing = 4
 
     def tracefunc(frame, event, arg, indent=[0]):
