@@ -9,8 +9,8 @@ from compiler import Code, Loop, compile
 from sample import random_code_flat
 
 
-code = compile(Code('[+.[]+>]>>-[[+]>]-[[]]'))
-#code = compile(Code(str(random_code_flat())))
+code = compile('[+.[]+>]>>-[[+]>]-[[]]')
+#code = compile(str(random_code_flat()))
 
 
 def render_code(code, prefix=''):

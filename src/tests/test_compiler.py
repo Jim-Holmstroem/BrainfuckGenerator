@@ -9,7 +9,7 @@ lift_str = partial(map, str)
 
 
 def test_str_identity_holds_after_compile():
-    test_input = map(Code, [
+    test_input = [
         '+++--->>>.....<',
         '+++---[>.<]...<',
         '+++[-+.][>+.]>....<',
@@ -18,7 +18,7 @@ def test_str_identity_holds_after_compile():
         '+++[-+[++].][>+.]',
         '[[[[[[[[++]]]]]]]]',
         '[>[>[>[>[>[>[>[++]]]]]]]]'
-    ])
+    ]
 
     assert_list_equal(
         lift_str(map(compile, test_input)),

@@ -48,6 +48,7 @@ class Loop(Code):
     def count(self):
         return 1 + super(Loop, self).count()
 
+
 class SuperProgram(object):
     """Code like '+++++' could be a "superpixel" and treated as '+=5' to optimize
     perhaps something more? ,. makes it hard and conditioning impossible
@@ -60,8 +61,6 @@ class SuperProgram(object):
 
 
 def compile_with_flat(program_code):
-    assert(isinstance(program_code, Code))
-
     flat = []  # Adds each new node, (how can I use these to crossover two trees from the flat?
             # it's also possible to pass it only without having something global like this
 #@trampoline

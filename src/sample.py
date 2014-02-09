@@ -44,7 +44,9 @@ class Prototype(object):
 
 
 def is_loop_prototype(obj):
-    return isinstance(obj, Prototype) and isinstance(obj.prototype_base(), Loop)
+    is_prototype = lambda: isinstance(obj, Prototype)
+    has_loop_prototype_base = lambda: isinstance(obj.prototype_base(), Loop)
+    return is_prototype() and has_loop_prototype_base()
 
 
 def scale_atomic_apriori(scale, atomic_apriori):
@@ -57,11 +59,13 @@ def scale_atomic_apriori(scale, atomic_apriori):
 
 
 class AtomicAPriori(dict):  # TODO immutable
-    def __init__(self, *args, **kwargs):
-        super(AtomicAPriori, self).__init__(*args, **kwargs)
-        if Code() in self.keys():
-            del self[Code()]
-        self[Code()] = 1 - sum(self.values())
+    """
+    """
+    def __init__(self, mapping):
+        super(AtomicAPriori, self).__init__(mapping)
+        if '' in self.keys():
+            del self['']
+        self[''] = 1 - sum(self.values())
 
     def sample(self):
         return choice(
@@ -74,12 +78,12 @@ a = (1 - 0.01) / 6
 basic_atomic_apriori = AtomicAPriori(
     {
         Prototype(Loop): a,
-        Code('>'): a,
-        Code('<'): a,
-        Code('.'): a,
-        Code(','): 0,
-        Code('+'): a,
-        Code('-'): a,
+        '>': a,
+        '<': a,
+        '.': a,
+        ',': 0,
+        '+': a,
+        '-': a,
     }
 )
 
@@ -90,6 +94,7 @@ class APriori(object):
     """Uniform apriori over levels.
 
     Inherit from this class if you want to have another apriori at each loop-level.
+
     """
 
     def __init__(self, atomic_apriori, scale=0.95):
@@ -126,7 +131,7 @@ basic_apriori = APriori(basic_atomic_apriori)
 def random_code(apriori=basic_apriori):
     atomic_sample = apriori.atomic().sample()
 
-    if atomic_sample == Code():
+    if atomic_sample == '':
         return atomic_sample
 
     else:
@@ -154,11 +159,12 @@ def random_code_flat(apriori=basic_apriori):
 
     def unfold(code):
         if is_loop_prototype(code):
-            return Code([
+            return Loop([
                 code(
                     random_code_flat(apriori.sub())
                 ),
             ])
+
         else:
             return code
 
