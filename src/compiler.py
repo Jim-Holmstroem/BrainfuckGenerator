@@ -2,7 +2,7 @@ from __future__ import print_function, division
 
 
 from itertools import imap, chain
-
+from operator import methodcaller
 
 immutablelist = tuple  # HACK
 
@@ -34,19 +34,23 @@ class Code(immutablelist):
     def count(self):
         """Acts as weight when sampling/slicing
 
+        The number of places to split the code
+
         Note
         ----
         Could be __len__ but then it screws with other things instead, better to have it this way
         """
-        return sum(map(len, iter(self)))
+        return sum(
+            map(
+                lambda code: code.count() if isinstance(code, Code) else 1,
+                iter(self)
+            )
+        )
 
 
 class Loop(Code):
     def __str__(self):
         return "[{}]".format(super(Loop, self).__str__())
-
-    def count(self):
-        return 1 + super(Loop, self).count()
 
 
 class SuperProgram(object):

@@ -49,7 +49,7 @@ def crossover(program_a, program_b):
                 outer_b(left_b+right_a),
             )
     """
-    def split(program, outer=lambda program: program):
+    def split(program, outer=lambda subprogram: subprogram):
         """Splits the program into ``outer, left,  right``.
 
         >>> program == outer(left + right)
@@ -67,7 +67,10 @@ def crossover(program_a, program_b):
         split : (outer : Code -> Code, left : Code, right Code)
             The split
         """
-        split_location = random split #choice(.., p=...)
+        split_this_level = choice(
+            [False, True],
+            p=[]
+        )
 
         if split_this_level:
             split_index = randint(0, len(program) + 1)  # TODO split should be CrossoverAPriori
@@ -80,10 +83,10 @@ def crossover(program_a, program_b):
             before, at, after = program[:index], program[i], program[i + 1:]
             assert(isinstance(at, Loop))
 
-            outer_outer = lambda program: outer(
-                before + Loop(program) + after
+            outer_outer = lambda subprogram: outer(
+                before + Loop(subprogram) + after
             )
-            subprogram =
+            subprogram = Code(at)
 
             return split(
                 subprogram,
@@ -93,9 +96,9 @@ def crossover(program_a, program_b):
     outer_a, left_a, right_a = split(program_a)
     outer_b, left_b, right_b = split(program_b)
 
-    return (
-        outer_a(left_a+right_b),
-        outer_a(left_b+right_a),
-        outer_b(left_a+right_b),
-        outer_b(left_b+right_a),
+    return (  # TODO itertool this
+        outer_a(left_a + right_b),
+        outer_a(left_b + right_a),
+        outer_b(left_a + right_b),
+        outer_b(left_b + right_a),
     )
