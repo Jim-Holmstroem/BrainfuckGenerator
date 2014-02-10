@@ -27,8 +27,8 @@ def test_str_identity_holds_after_compile():
     )
 
 def test_count():
-    def compile_count(x):
-        return compile(x).count()
+    def assert_compile_count_equal(code, count):
+        assert_equal(compile(code).n_splits(), count)
 
     programs, counts = zip(
         *[
@@ -36,8 +36,20 @@ def test_count():
             ('+', 2),
             ('++', 3),
             ('+++', 4),
+            ('[]', 3),
+            ('[][]', 5),
+            ('[][][]', 7),
+            ('[+]', 4),
+            ('[+][+]', 7),
+            ('+[+]', 5),
+            ('+[+]+', 6),
+            ('+[++]+', 7),
+            ('[[]]', 5),
+            ('[[[]]]', 7),
+            ('[+[[]]]', 8),
+            ('[+[+[]]]', 9),
         ]
     )
 
     for program, count in zip(programs, counts):
-        yield assert_equal, compile_count(program), count
+        yield assert_compile_count_equal, program, count

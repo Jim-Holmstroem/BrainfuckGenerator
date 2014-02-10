@@ -31,7 +31,7 @@ class Code(immutablelist):
             super(Code, self).__add__(other)
         )
 
-    def count(self):
+    def n_splits(self):
         """Acts as weight when sampling/slicing
 
         The number of places to split the code
@@ -42,15 +42,18 @@ class Code(immutablelist):
         """
         return sum(
             map(
-                lambda code: code.count() if isinstance(code, Code) else 1,
+                lambda code: code.n_splits() if isinstance(code, Code) else 1,
                 iter(self)
             )
-        )
+        ) + 1
 
 
 class Loop(Code):
     def __str__(self):
         return "[{}]".format(super(Loop, self).__str__())
+
+    def n_splits(self):
+        return super(Loop, self).n_splits() + 1
 
 
 class SuperProgram(object):
