@@ -21,6 +21,17 @@ def possibly_mutated(program, mutation_apriori=None):
 def crossover(program_a, program_b):
     """Crossover between program_a, program_b
 
+    crossover(  # NOTE | is where the split took place
+        +++[+++|++]++,
+        ---[--|---]--,
+    ) == (
+        +++[+++|---]++,
+        +++[--|++]++,
+        ---[+++|---]--,
+        ---[--|++]--,
+    )
+
+
     Parameters
     ----------
     program_a : Code
@@ -29,14 +40,32 @@ def crossover(program_a, program_b):
     Returns
     -------
     crossover_programs : Code, Code, Code, Code
-        outer_A(left_A+right_B),
-        outer_A(left_B+right_A),
-        outer_B(left_A+right_B),
-        outer_B(left_B+right_A),
+        Crossovered programs.
+        Like this:
+        >>> (
+                outer_a(left_a+right_b),
+                outer_a(left_b+right_a),
+                outer_b(left_a+right_b),
+                outer_b(left_b+right_a),
+            )
     """
     def split(program, outer=lambda program: program):
-        """
-        : (outer : Code -> Code, left : Code, right Code)
+        """Splits the program into ``outer, left,  right``.
+
+        >>> program == outer(left + right)
+        True
+
+        Parameters
+        ----------
+        program : Code
+            The program to split
+        outer : Code -> Code
+            Represents outside ths split for example ``outer(x) = +++[x]+``
+
+        Returns
+        -------
+        split : (outer : Code -> Code, left : Code, right Code)
+            The split
         """
         split_location = random split #choice(.., p=...)
 
